@@ -6,6 +6,8 @@ import RichEditor from "@/app/components/RichEditor";
 const Page = () => {
     const [richHtml, setRichHtml] = useState("");
 
+    if (typeof window === "undefined") return null;
+
     return (
         <section>
             {" "}

@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from "react";
 // import ReactQuill from "react-quill";
 import dynamic from "next/dynamic";
