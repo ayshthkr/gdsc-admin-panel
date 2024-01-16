@@ -3,7 +3,7 @@ import { useState } from "react";
 import DOMPurify from "dompurify";
 import RichEditor from "@/app/components/RichEditor";
 
-const page = () => {
+const Page = () => {
     const [richHtml, setRichHtml] = useState("");
 
     return (
@@ -31,4 +31,4 @@ const page = () => {
     );
 };
 
-export default page;
+export default Page;
