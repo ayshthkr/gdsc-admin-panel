@@ -1,0 +1,9 @@
+.ql-container {
+    min-height: 500px;
+    display: flex;
+    flex-direction: column;
+}
+
+.ql-editor {
+    flex: 1;
+}
