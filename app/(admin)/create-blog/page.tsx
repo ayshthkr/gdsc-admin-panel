@@ -3,8 +3,14 @@
 import { ChangeEvent, useRef, useState } from 'react';
 import RichEditor from '@/components/RichEditor';
 import Image from 'next/image';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { UploadCloud, XCircle } from 'lucide-react';
+import handleBlogCreation from '@/app/_actions/handleBlogCreation';
+import { useFormStatus } from 'react-dom';
 
-type BlogData = {
+export type BlogData = {
 	title: string;
 	content: string;
 	tagsArr: string[];
@@ -48,19 +54,45 @@ const Page = () => {
 		}));
 	};
 
+	const formAction = handleBlogCreation.bind(null, blogData);
+
 	return (
-		<section className='w-full mx-auto xl:grid xl:grid-cols-4'>
+		<form
+			action={formAction}
+			className='w-full mx-auto xl:grid xl:grid-cols-4'>
 			<div className='col-span-3'>
 				<h1 className='font-extrabold pl-2 py-2 text-2xl underline decoration-4 underline-offset-4'>
 					Create A Blog
 				</h1>
 				<div>
-					<RichEditor
-						richHtml={richHtml}
-						setRichHtml={setRichHtml}
-						blogData={blogData}
-						setBlogData={setBlogData}
-					/>
+					<div className='w-full p-2 flex flex-col space-y-3'>
+						<div className='flex flex-col space-y-3'>
+							<Label
+								htmlFor='title'
+								className='text-xl font-semibold'>
+								Blog Title:
+							</Label>
+							<Input
+								type='text'
+								name='title'
+								value={blogData?.title}
+								placeholder='Enter title here...'
+								className='font-bold'
+								onChange={e => {
+									setBlogData({
+										...blogData,
+										title: e.target.value,
+									});
+								}}
+							/>
+						</div>
+						<RichEditor
+							richHtml={richHtml}
+							setRichHtml={setRichHtml}
+							blogData={blogData}
+							setBlogData={setBlogData}
+						/>
+					</div>
 				</div>
 
 				<div className='p-2'>
@@ -72,46 +104,70 @@ const Page = () => {
 						}}></div>
 				</div>
 			</div>
-			<div className='col-span-1 sticky top-0 right-0 self-start border-[1px] border-gray-400 p-2 bg-gray-900 flex flex-col justify-start items-center w-full xl:min-h-screen'>
-				<h1 className='font-bold text-gray-300  py-2 text-xl'>
+			<div className='dark col-span-1 sticky top-0 right-0 self-start border-[1px] border-gray-400 p-2 bg-card text-card-foreground flex flex-col space-y-3 justify-start items-center w-full xl:min-h-screen'>
+				<div className='w-full font-bold text-center underline decoration-2 underline-offset-4 py-2 text-xl'>
 					Blog Information
-				</h1>
-				<hr />
-				<div>
-					<div>
-						<label
-							className='block mt-5 mb-1  font-medium text-gray-300  '
-							htmlFor='file_input'>
-							Cover Image
-						</label>
+				</div>
+				<div className='flex flex-col p-2 space-y-5 w-full'>
+					<div className='flex flex-col space-y-3'>
+						<Label htmlFor='file_input'>Cover Image:</Label>
 						{blogData?.coverImage ? (
-							<Image
-								src={blogData?.coverImage}
-								// src={"/img.png"}
-								width={300}
-								height={200}
-								alt='cover image'></Image>
-						) : null}
-
-						<input
-							className='block w-full text-xs text-gray-900 border border-gray-300 rounded-md cursor-pointer bg-gray-50 '
-							id='file_input'
-							type='file'
-							accept='image/*'
-							onChange={handleFileChange}
-						/>
+							<div className='relative'>
+								<Image
+									src={blogData?.coverImage}
+									// src={"/img.png"}
+									width={640}
+									height={360}
+									alt='cover image'
+									className='bg-cover border-2 border-slate-200'
+								/>
+								<XCircle
+									width={30}
+									height={30}
+									className='absolute top-2 right-2 rounded-full hover:bg-slate-400 text-slate-900 transition duration-200 hover:cursor-pointer'
+									onClick={() =>
+										setBlogData(old => ({
+											...old,
+											coverImage: '',
+										}))
+									}
+								/>
+							</div>
+						) : (
+							<div className='relative'>
+								<input
+									className='opacity-0 w-full absolute top-0 right-0 z-10 peer'
+									id='file_input'
+									name='file_input'
+									type='file'
+									accept='image/*'
+									onChange={handleFileChange}
+								/>
+								<Button
+									className='w-full peer-hover:bg-secondary-foreground/10 has-[:hover]:bg-secondary-foreground/10 transition duration-150 peer-hover:cursor-pointer'
+									variant='outline'>
+									<UploadCloud
+										className=' bg-transparent p-0 h-9 w-9'
+										// height={50}
+										// width={50}
+									/>
+								</Button>
+							</div>
+						)}
 					</div>
-					<div>
-						<label
-							className='block mt-5 mb-1  font-medium text-gray-300  '
-							htmlFor='file_input'>
-							Author
-						</label>
+					<div className='flex flex-col space-y-3'>
+						<Label
+							// className='block mt-5 mb-1  font-medium text-gray-300  '
+							htmlFor='author'>
+							Author:
+						</Label>
 
-						<input
+						<Input
 							type='text'
 							value={blogData?.author}
-							className='w-full rounded-sm border-gray-300 shadow-md   p-1 font-semibold'
+							name='author'
+							// className='w-full rounded-sm border-gray-300 shadow-md   p-1 font-semibold'
+							className='bg-inherit'
 							onChange={e => {
 								setBlogData({
 									...blogData,
@@ -120,57 +176,63 @@ const Page = () => {
 							}}
 						/>
 					</div>
-					<div>
-						<label
-							className='block mt-5 mb-1  font-medium text-gray-300  '
-							htmlFor='file_input'>
-							Tags
-						</label>
+					<div className='flex flex-col space-y-3'>
+						<Label htmlFor='tags'>Tags:</Label>
 
-						<div className='grid grid-cols-6 gap-1'>
-							<input
+						<div className='flex space-x-3'>
+							<Input
 								type='text'
+								name='tags'
 								value={tag}
 								ref={tagInput}
-								className=' rounded-sm border-gray-300 shadow-md   p-1 font-semibold col-span-4'
 								onChange={e => {
 									setTag(e.target.value);
 								}}
-								placeholder='add tag...'
+								placeholder='Add tag...'
+								className='w-full'
 							/>
-							<button
-								className='col-span-2 rounded-md hover:bg-green-700 bg-green-500'
+							<Button
 								onClick={() => {
 									handleAddTag(tag);
-								}}>
+								}}
+								variant='outline'>
 								Add
-							</button>
+							</Button>
 						</div>
-						<div className='p-1 text-gray-300 rounded-sm my-1'>
+						<div className='p-1 flex flex-wrap'>
 							{blogData?.tagsArr.map((tag, index) => (
-								<span
+								<Button
 									key={index}
-									className='border-[1px] px-2 mx-1 p-[2px] rounded-md border-indigo-400 text-blue-500'
+									// className='border-[1px] px-2 mx-1 p-[2px] rounded-md border-indigo-400 text-blue-500'
+									variant='secondary'
 									onClick={() => {
 										handleRemoveTag(tag);
-									}}>
+									}}
+									className='m-1'>
 									{tag}
-								</span>
+								</Button>
 							))}
 						</div>
 					</div>
 				</div>
-				<button
-					className='  ml-3 mt-10 hover:bg-green-700 bg-green-500 px-3 py-1 rounded-sm'
-					onClick={() => {
-						console.log('blogData is: ', blogData);
-					}}>
-					Submit
-				</button>
+				<SubmitButton />
 			</div>
-		</section>
+		</form>
 	);
 };
+
+function SubmitButton() {
+	const { pending } = useFormStatus();
+	return (
+		<Button
+			type='submit'
+			variant='outline'
+			className='p-7 py-5 w-full font-extrabold text-xl '
+			disabled={pending}>
+			Submit
+		</Button>
+	);
+}
 
 const toBase64 = (file: File): Promise<string> => {
 	return new Promise<string>((resolve, reject) => {
