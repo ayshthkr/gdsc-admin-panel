@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import DOMPurify from "dompurify";
+// import DOMPurify from "dompurify";
 import RichEditor from "@/app/components/RichEditor";
 
 const Page = () => {
@@ -23,7 +23,8 @@ const Page = () => {
             <div>
                 <div
                     dangerouslySetInnerHTML={{
-                        __html: DOMPurify.sanitize(richHtml),
+                        // __html: DOMPurify.sanitize(richHtml),
+                        __html: richHtml,
                     }}
                 ></div>
             </div>
